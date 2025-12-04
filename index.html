@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>مولد رابط واتساب + QR — احترافي</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- QRCode lib -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+  <style>
+    .scroll-smooth::-webkit-scrollbar { width: 8px; }
+    .scroll-smooth::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 8px; }
+    .scroll-smooth:hover::-webkit-scrollbar-thumb { background: #9ca3af; }
+    .glass { backdrop-filter: blur(8px); background: rgba(255,255,255,0.75); }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 text-slate-800">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-30 glass border-b border-slate-200">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+      <div class="font-extrabold text-xl">واتساب لينك برو</div>
+      <nav class="hidden md:flex items-center gap-6 text-sm">
+        <a href="https://ai.ealimni.info/" class="hover:text-emerald-700">الرئيسية</a>
+        <a href="https://ai.ealimni.info/about-us/" class="hover:text-emerald-700">من نحن</a>
+        <a href="https://ai.ealimni.info/privacy-policy/" class="hover:text-emerald-700">سياسة الخصوصية</a>
+        <a href="https://ai.ealimni.info/contact-us/" class="hover:text-emerald-700">اتصل بنا</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+    <div class="bg-white rounded-3xl shadow-lg p-6 sm:p-8">
+      <header class="mb-6">
+        <h1 class="text-2xl sm:text-3xl font-bold">مولد رابط واتساب + كود QR</h1>
+        <p class="text-slate-600 mt-1 text-sm">اختر الدولة أو ابحث بالاسم/الكود، اكتب رقمك بدون أصفار أو رموز، وأضف رسالة جاهزة (اختياري).</p>
+      </header>
+
+      <!-- Country + Phone -->
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="md:col-span-1">
+          <label class="block text-sm mb-1">الدولة</label>
+          <div class="relative">
+            <input id="countrySearch" type="text" placeholder="ابحث باسم الدولة أو +كود…"
+                   class="w-full rounded-2xl border border-slate-300 px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                   autocomplete="off" />
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
+            <div id="countryDropdown"
+                 class="absolute z-20 mt-2 w-full max-h-72 overflow-auto scroll-smooth bg-white rounded-2xl border border-slate-200 shadow-xl hidden"></div>
+          </div>
+          <p class="text-xs text-slate-500 mt-1">مثال: “مصر” أو “egy” أو “+20”.</p>
+        </div>
+
+        <div>
+          <label class="block text-sm mb-1">كود الدولة</label>
+          <input id="dialCode" type="text" class="w-full rounded-2xl border border-slate-300 px-4 py-2"
+                 placeholder="+20" inputmode="numeric" />
+        </div>
+
+        <div>
+          <label class="block text-sm mb-1">رقم الهاتف (بدون 0 في البداية)</label>
+          <input id="phone" type="tel" class="w-full rounded-2xl border border-slate-300 px-4 py-2"
+                 placeholder="1001234567" inputmode="numeric" />
+        </div>
+      </div>
+
+      <!-- Message -->
+      <div class="mt-4">
+        <label class="block text-sm mb-1">رسالة جاهزة (اختياري)</label>
+        <textarea id="message" rows="3" class="w-full rounded-2xl border border-slate-300 px-4 py-2"
+                  placeholder="أكتب رسالة تظهر عند فتح المحادثة…"></textarea>
+      </div>
+
+      <!-- Link type -->
+      <div class="flex flex-wrap items-center gap-4 mt-4">
+        <span class="text-sm">نوع الرابط:</span>
+        <label class="inline-flex items-center gap-2">
+          <input type="radio" name="linktype" value="wa" checked />
+          <span>wa.me</span>
+        </label>
+        <label class="inline-flex items-center gap-2">
+          <input type="radio" name="linktype" value="api" />
+          <span>api.whatsapp.com</span>
+        </label>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex flex-wrap gap-3 mt-5">
+        <button id="generateBtn" class="px-5 py-2.5 rounded-2xl bg-emerald-600 text-white hover:bg-emerald-700">توليد الرابط + QR</button>
+      </div>
+
+      <!-- Result -->
+      <div id="resultBox" class="hidden mt-6 space-y-4">
+        <div>
+          <label class="block text-sm mb-1">الرابط الناتج</label>
+          <a id="finalLink" href="#" target="_blank" class="break-all text-emerald-700 underline"></a>
+        </div>
+
+        <div>
+          <div id="qrcode" class="bg-white p-4 rounded-2xl border inline-block"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="mt-10 border-t border-slate-200">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 text-center text-xs text-slate-500">
+      &copy; <span id="year"></span> واتساب لينك برو — جميع الحقوق محفوظة.
+    </div>
+  </footer>
+
+  <script>
+    const countries = [
+      {n:'Egypt',c:'EG',d:'20'},{n:'Saudi Arabia',c:'SA',d:'966'},{n:'United States',c:'US',d:'1'},
+      {n:'United Kingdom',c:'GB',d:'44'}
+    ];
+
+    function flagEmoji(iso2){
+      return iso2.toUpperCase().replace(/./g, c => String.fromCodePoint(c.charCodeAt(0) + 127397));
+    }
+
+    const countrySearch = document.getElementById('countrySearch');
+    const countryDropdown = document.getElementById('countryDropdown');
+    const dialCodeInput = document.getElementById('dialCode');
+    const phoneInput = document.getElementById('phone');
+    const messageInput = document.getElementById('message');
+    const generateBtn = document.getElementById('generateBtn');
+    const resultBox = document.getElementById('resultBox');
+    const finalLink = document.getElementById('finalLink');
+    const qrcodeContainer = document.getElementById('qrcode');
+
+    let qrCodeInstance = null;
+    let currentLink = '';
+
+    function renderCountries(filter = '') {
+      countryDropdown.innerHTML = '';
+      const filteredCountries = countries.filter(c => c.n.toLowerCase().includes(filter.toLowerCase()) || c.d.includes(filter));
+      if(!filteredCountries.length){
+        countryDropdown.innerHTML = '<div class="p-4 text-sm text-slate-500">لا توجد نتائج.</div>';
+        return;
+      }
+      filteredCountries.forEach(country => {
+        const item = document.createElement('div');
+        item.className = 'flex items-center justify-between p-3 cursor-pointer hover:bg-slate-100';
+        item.innerHTML = `<span class="text-sm">${flagEmoji(country.c)} ${country.n}</span><span class="text-sm font-mono text-slate-500">+${country.d}</span>`;
+        item.addEventListener('click',()=>{
+          countrySearch.value = `${country.n} (+${country.d})`;
+          dialCodeInput.value = `+${country.d}`;
+          countryDropdown.classList.add('hidden');
+        });
+        countryDropdown.appendChild(item);
+      });
+    }
+
+    countrySearch.addEventListener('input',()=>{countryDropdown.classList.remove('hidden'); renderCountries(countrySearch.value)});
+    document.addEventListener('click', e => { if(!countryDropdown.contains(e.target) && e.target !== countrySearch) countryDropdown.classList.add('hidden') });
+
+    function generateLink(){
+      const dial = dialCodeInput.value.replace(/\D/g,'');
+      const phone = phoneInput.value.replace(/\D/g,'');
+      const msg = encodeURIComponent(messageInput.value);
+      const type = document.querySelector('input[name="linktype"]:checked').value;
+      if(!dial || !phone) return;
+      currentLink = type==='wa'?`https://wa.me/${dial}${phone}${msg?`?text=${msg}`:''}`:`https://api.whatsapp.com/send?phone=${dial}${phone}${msg?`&text=${msg}`:''}`;
+      finalLink.href = currentLink;
+      finalLink.textContent = currentLink;
+      resultBox.classList.remove('hidden');
+      if(qrCodeInstance) qrcodeContainer.innerHTML=''; 
+      qrCodeInstance = new QRCode(qrcodeContainer,{text:currentLink,width:150,height:150});
+    }
+
+    generateBtn.addEventListener('click', generateLink);
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+  </html>
